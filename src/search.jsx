@@ -1,13 +1,18 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import React from 'react';
-
+const RhymeEngine = require('./rhyme-engine');
 export default function Search() {
 
     const [query, setQuery] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [results, setResults] = React.useState([]);
 
-
+    React.useEffect(() => {
+        if (query !== '') {
+            setResults(RhymeEngine.rhyme(query));
+            setLoading(false);
+        }
+    });
 
     return (
         <>
