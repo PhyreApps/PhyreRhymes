@@ -12,6 +12,6 @@ const RhymeEngine = require('./rhyme-engine');
 // fs.writeFileSync('src/dict/bg-words.json', JSON.stringify(lines));
 // return;
 
-let rhymes = RhymeEngine.rhyme('божидар');
+let rhymes = RhymeEngine.rhyme('Иван');
 
 console.log(rhymes);

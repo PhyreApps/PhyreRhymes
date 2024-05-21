@@ -1,11 +1,10 @@
 const RhymeHelperBG = require("./rhyme-helper-bg");
 const words = require("./dict/bg-words.json");
 class RhymeEngine {
-    static rhyme(word) {
+    static rhyme(findRhymesForWord) {
 
         const words = require('./dict/bg-words.json');
 
-        let findRhymesForWord = 'божидар';
         let findRhymesForWordSimilar = RhymeHelperBG.getSimilarSounding(findRhymesForWord);
         let findRhymesForWordCombinations = RhymeHelperBG.wordCombinations(findRhymesForWord, 4);
         let findRhymesForWordLastFourLetters = findRhymesForWord.substring(findRhymesForWord.length - 4);

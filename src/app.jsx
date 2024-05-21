@@ -7,7 +7,7 @@ const root = createRoot(domNode);
 
 root.render(
     <React.StrictMode>
-    <div className="w-[24rem] m-auto mt-12">
+    <div className="w-[29rem] m-auto my-12">
         <div className="text-center mb-4">
             <h1 className="text-2xl">Phyre Rhymes v1.0</h1>
             <p className="text-sm">
