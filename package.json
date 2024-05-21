@@ -24,9 +24,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron .",
+    "electron": "ELECTRON_ENV=development electron . ",
     "dist": "electron-builder",
-    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\""
+    "electron-dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && ELECTRON_ENV=development electron .\""
   },
   "main": "electron.js",
   "eslintConfig": {
