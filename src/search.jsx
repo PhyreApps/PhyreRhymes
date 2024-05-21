@@ -64,22 +64,11 @@ export default function Search() {
                 {results.length > 0 ? <>
                         <div className="text-wrap p-4 capitalize rounded-md shadow-lg bg-white/10 ring-1 ring-black ring-opacity-5 focus:outline-none">
                             {results.map((result) => (
+
                                 <span key={result.word}>
 
-                                    {result.rating === 1.5
-                                        ?
-                                        <span className="text-yellow-400">{result.word}</span>
-                                        :
-                                        result.rating === 1
-                                            ?
-                                            <span className="text-green-800">{result.word}</span>
-                                            :
-                                            result.rating === 0.5
-                                                ?
-                                                <span className="text-yellow-100">{result.word}</span>
-                                                :
-                                                <span className="text-yellow-200">{result.word}</span>
-                                    }
+                                     <span className={result.tailwindClass}>{result.word}</span>
+
                                     &nbsp;  &nbsp;
                                 </span>
                             ))}
