@@ -1,9 +1,23 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { utils: { fromBuildIdentifier } } = require('@electron-forge/core');
 
 module.exports = {
+  buildIdentifier: process.env.IS_BETA ? 'beta' : 'prod',
   packagerConfig: {
     asar: true,
+    name: 'PhyreRhymes',
+    executableName: 'PhyreRhymes',
+    appCopyright: 'Phyre Apps',
+    win32metadata: {
+      ProductName: 'PhyreRhymes',
+      CompanyName: 'Phyre Apps',
+      FileDescription: 'PhyreRhymes',
+    },
+    appBundleId: fromBuildIdentifier({
+      prod: 'com.phyre-apps.phyre-rhymes',
+      beta: 'com.phyre-apps.phyre-rhymes-beta'
+    }),
   },
   rebuildConfig: {},
   makers: [
@@ -13,7 +27,14 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      platforms: ['darwin','linux'],
+    },
+    {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        background: './src/assets/dmg-background.jpg',
+        format: 'ULFO'
+      }
     },
     {
       name: '@electron-forge/maker-deb',
