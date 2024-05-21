@@ -7,7 +7,7 @@ export default function Search() {
     const [loading, setLoading] = React.useState(false);
     const [results, setResults] = React.useState([]);
 
-    
+
 
     return (
         <>
