@@ -1,4 +1,35 @@
 class RhymeHelperBG {
+
+    static getRhymeRate(word, withWord) {
+
+        if (word.length < 3) {
+            return 0;
+        }
+        if (withWord.length < 3) {
+            return 0;
+        }
+        word = word.toLowerCase();
+        withWord = withWord.toLowerCase();
+        if (word === withWord) {
+            return 0;
+        }
+
+        let rhymeRate = 0;
+        const wordSimilar = this.getSimilarSounding(word);
+        const wordCombinations = this.wordCombinations(word, 4);
+        const wordLastFourLetters = word.substring(word.length - 4);
+        const wordLastThreeLetters = word.substring(word.length - 3);
+
+        if (withWord.includes(wordLastFourLetters)) {
+            rhymeRate = rhymeRate + 1;
+        }
+        if (withWord.includes(wordLastThreeLetters)) {
+            rhymeRate = rhymeRate + 1;
+        }
+
+        return rhymeRate;
+    }
+
     static wordCombinations(word, combinationNumbers = 3) {
         let combinations = [];
         let alphabets = this.split(word);
