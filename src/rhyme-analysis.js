@@ -22,6 +22,17 @@ class RhymeAnalysis {
                 let rhymeRate = RhymeHelperBG.getRhymeRate(word1, word2);
                 if (rhymeRate > 0) {
 
+                    let word1PositionStart = textColored.indexOf(word1);
+                    let word1PositionEnd = word1PositionStart + word1.length;
+                    let word2PositionStart = textColored.indexOf(word2);
+                    let word2PositionEnd = word2PositionStart + word2.length;
+
+                    let color = colors[Math.floor(Math.random() * colors.length)];
+
+                    if (word1PositionStart > 0 && word1PositionEnd > 0) {
+                        textColored = this.replaceSubstring(textColored, word1PositionStart, word1PositionEnd, `<span style="color:${color}">${word1}</span>`);
+                    }
+
                     rhymes.push({
                         word1: word1,
                         word2: word2,
@@ -32,6 +43,17 @@ class RhymeAnalysis {
         }
 
         return textColored;
+    }
+
+    static replaceSubstring(str, start, end, replacement) {
+        if (start < 0 || end >= str.length || start > end) {
+            throw new Error("Invalid start or end positions");
+        }
+
+        let before = str.substring(0, start);
+        let after = str.substring(end + 1);
+
+        return before + replacement + after;
     }
 }
 
