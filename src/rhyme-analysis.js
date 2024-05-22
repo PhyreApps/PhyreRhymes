@@ -5,8 +5,53 @@ class RhymeAnalysis {
 
         let textColored = text;
         let words = text.split(' ');
-        let colors = ['yellow', 'green', 'blue', 'indigo', 'purple', 'pink', 'red'];
+        let colors = [
+            '#FF0000',
+            '#00FF00',
+            '#0000FF',
+            '#FFFF00',
+            '#00FFFF',
+            '#FF00FF',
+            '#FFA500',
+            '#800080',
+            '#008000',
+            '#000080',
+            '#800000',
+            '#808000',
+            '#008080',
+            '#800080',
+            '#808080',
+            '#FFC0CB',
+            '#FF4500',
+            '#FFD700',
+            '#FF6347',
+            '#FF69B4',
+            '#FFA07A',
+            '#FFA500',
+            '#FFD700',
+            '#FF6347',
+            '#FF69B4',
+            '#FFA07A',
+            '#FFA500',
+            '#FFD700',
+            '#FF6347',
+            '#FF69B4',
+            '#FFA07A',
+            '#FFA500',
+            '#FFD700',
+            '#FF6347',
+            '#FF69B4',
+            '#FFA07A',
+            '#FFA500',
+            '#FFD700',
+            '#FF6347',
+            '#FF69B4',
+            '#FFA07A',
+            '#FFA500',
+            '#FFD700',
+        ];
 
+        let ryhmeI = 0;
         let rhymes = [];
         for (let i = 0; i < words.length; i++) {
             for (let j = 0; j < words.length; j++) {
@@ -22,16 +67,11 @@ class RhymeAnalysis {
                 let rhymeRate = RhymeHelperBG.getRhymeRate(word1, word2);
                 if (rhymeRate > 0) {
 
-                    let word1PositionStart = textColored.indexOf(word1);
-                    let word1PositionEnd = word1PositionStart + word1.length;
-                    let word2PositionStart = textColored.indexOf(word2);
-                    let word2PositionEnd = word2PositionStart + word2.length;
+                    let color = colors[ryhmeI];
+                    ryhmeI++;
 
-                    let color = colors[Math.floor(Math.random() * colors.length)];
-
-                    if (word1PositionStart > 0 && word1PositionEnd > 0) {
-                        textColored = this.replaceSubstring(textColored, word1PositionStart, word1PositionEnd, `<span style="color:${color}">${word1}</span>`);
-                    }
+                    textColored = textColored.replace(" "+word1, ` <span style="color:${color}">${word1}</span> `);
+                    textColored = textColored.replace(" "+word2, ` <span style="color:${color}">${word2}</span> `);
 
                     rhymes.push({
                         word1: word1,
@@ -45,16 +85,6 @@ class RhymeAnalysis {
         return textColored;
     }
 
-    static replaceSubstring(str, start, end, replacement) {
-        if (start < 0 || end >= str.length || start > end) {
-            throw new Error("Invalid start or end positions");
-        }
-
-        let before = str.substring(0, start);
-        let after = str.substring(end + 1);
-
-        return before + replacement + after;
-    }
 }
 
 module.exports = RhymeAnalysis;
