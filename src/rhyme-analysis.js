@@ -2,7 +2,10 @@ const RhymeHelperBG = require("./rhyme-helper-bg");
 
 class RhymeAnalysis {
     static analyze(text) {
+
+        let textColored = text;
         let words = text.split(' ');
+        let colors = ['yellow', 'green', 'blue', 'indigo', 'purple', 'pink', 'red'];
 
         let rhymes = [];
         for (let i = 0; i < words.length; i++) {
@@ -18,6 +21,7 @@ class RhymeAnalysis {
 
                 let rhymeRate = RhymeHelperBG.getRhymeRate(word1, word2);
                 if (rhymeRate > 0) {
+
                     rhymes.push({
                         word1: word1,
                         word2: word2,
@@ -27,7 +31,7 @@ class RhymeAnalysis {
             }
         }
 
-        return rhymes;
+        return textColored;
     }
 }
 
