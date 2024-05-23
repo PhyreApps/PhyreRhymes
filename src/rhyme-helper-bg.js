@@ -33,9 +33,9 @@ class RhymeHelperBG {
         if (wordLastThreeLetters === withWordLastThreeLetters) {
             rhymeRate = rhymeRate + 0.5;
         }
-        if (wordLastTwoLetters === withWordLastTwoLetters) {
-            rhymeRate = rhymeRate + 0.05;
-        }
+        // if (wordLastTwoLetters === withWordLastTwoLetters) {
+        //     rhymeRate = rhymeRate + 0.05;
+        // }
 
         if (wordSimilar.length > 0) {
             for (let similar of wordSimilar) {
@@ -44,9 +44,9 @@ class RhymeHelperBG {
                 let wordSimilarThreeLetters = similar.substring(similar.length - 3);
                 let wordSimilarFourLetters = similar.substring(similar.length - 4);
 
-                if (wordSimilarTwoLetters === withWordLastTwoLetters) {
-                    rhymeRate = rhymeRate + 0.05;
-                }
+                // if (wordSimilarTwoLetters === withWordLastTwoLetters) {
+                //     rhymeRate = rhymeRate + 0.05;
+                // }
                 if (wordSimilarThreeLetters === withWordLastThreeLetters) {
                     rhymeRate = rhymeRate + 0.5;
                 }
