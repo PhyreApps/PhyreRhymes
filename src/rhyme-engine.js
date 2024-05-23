@@ -12,7 +12,7 @@ class RhymeEngine {
 
 
         let rhymes = [];
-        let maxRyhmes = 30;
+        let maxRyhmes = 10000;
 
         for (let i = 0; i < words.length; i++) {
 

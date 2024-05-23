@@ -31,8 +31,14 @@ class RhymeHelperBG {
 
         if (wordVowels.length > 0 && withWordVowels.length > 0) {
             for (let vowel of wordVowels) {
-                if (withWordVowels.includes(vowel)) {
-                    rhymeRate = rhymeRate + 0.05;
+                for (let withVowel of withWordVowels) {
+                    if (vowel.letter === withVowel.letter) {
+                        if (vowel.position === withVowel.position) {
+                            rhymeRate = rhymeRate + 0.5;
+                        } else {
+                            rhymeRate = rhymeRate + 0.05;
+                        }
+                    }
                 }
             }
         }
@@ -162,9 +168,14 @@ class RhymeHelperBG {
     static getVowelLettersFromWord(word) {
         let vowels = [];
         let wordArray = this.split(word);
+        let i = 0;
         for (let letter of wordArray) {
+            i++;
             if (this.vowelLetters().includes(letter)) {
-                vowels.push(letter);
+                vowels.push({
+                    "letter": letter,
+                    "position": i
+                });
             }
         }
         return vowels;

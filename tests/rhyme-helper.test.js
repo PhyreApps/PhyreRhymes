@@ -8,7 +8,7 @@ test("Check rhymes", () => {
         .toBeGreaterThan(0.04);
 
     expect(RhymeHelperBG.getRhymeRate("Помогна", "Доволна"))
-        .toBeGreaterThan(0.1);
+        .toBeGreaterThan(1);
 
     expect(RhymeHelperBG.getRhymeRate("Помогна", "Кротна"))
         .toBeGreaterThan(0.1);
