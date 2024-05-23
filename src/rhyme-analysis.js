@@ -89,7 +89,7 @@ class RhymeAnalysis {
         let highlightText = '';
         for (let i = 0; i < chunks.length; i++) {
             if (chunks[i].match) {
-                highlightText += '<b>' + chunks[i].text + '</b>';
+                highlightText += '<b class="text-green-500">' + chunks[i].text + '</b>';
             } else {
                 highlightText += '<span>' + chunks[i].text + '</span>';
             }
@@ -98,7 +98,7 @@ class RhymeAnalysis {
         highlightText += '<br/><br/>';
         highlightText += 'Общо рими: ' + rhymedWords.length + '<br/>';
 
-        highlightText = highlightText.replace(/\r?\n|\r/g, '<br>');
+        highlightText = highlightText.replace(/\r?\n|\r\./g, '<br>');
 
         return highlightText;
     }

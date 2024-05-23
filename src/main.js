@@ -17,6 +17,7 @@ const createWindow = () => {
   });
 
   // and load the index.html of the app.
+  console.log(MAIN_WINDOW_WEBPACK_ENTRY);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
