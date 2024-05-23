@@ -1,10 +1,13 @@
 const RhymeHelperBG = require("./rhyme-helper-bg");
+const highlightWords = require("highlight-words");
 
 class RhymeAnalysis {
     static analyze(text) {
 
-        let textColored = text;
-        let words = text.split(' ');
+        const segmenter = new Intl.Segmenter([], { granularity: 'word' });
+        const segmentedText = segmenter.segment(text);
+        const words = [...segmentedText].filter(s => s.isWordLike).map(s => s.segment);
+
         let colors = [
             '#FF0000',
             '#00FF00',
@@ -53,6 +56,7 @@ class RhymeAnalysis {
 
         let ryhmeI = 0;
         let rhymes = [];
+        let rhymedWords = [];
         for (let i = 0; i < words.length; i++) {
             for (let j = 0; j < words.length; j++) {
                 if (i === j) {
@@ -61,28 +65,42 @@ class RhymeAnalysis {
                 let word1 = words[i];
                 let word2 = words[j];
 
-                word1 = word1.replace(/[^a-zA-Zа-яА-Я]/g, '');
-                word2 = word2.replace(/[^a-zA-Zа-яА-Я]/g, '');
-
                 let rhymeRate = RhymeHelperBG.getRhymeRate(word1, word2);
                 if (rhymeRate > 0) {
-
-                    let color = colors[ryhmeI];
-                    ryhmeI++;
-
-                    textColored = textColored.replace(" "+word1, ` <span style="color:${color}">${word1}</span> `);
-                    textColored = textColored.replace(" "+word2, ` <span style="color:${color}">${word2}</span> `);
 
                     rhymes.push({
                         word1: word1,
                         word2: word2,
                         rating: rhymeRate
                     });
+                    rhymedWords.push(word1);
+                    rhymedWords.push(word2);
                 }
             }
         }
+        // Remove duplicates
+        rhymedWords = rhymedWords.filter((item, index) => rhymedWords.indexOf(item) === index);
 
-        return textColored;
+        let chunks = highlightWords.default({
+            text: text,
+            query: '/('+rhymedWords.join('|')+')/'
+        });
+
+        let highlightText = '';
+        for (let i = 0; i < chunks.length; i++) {
+            if (chunks[i].match) {
+                highlightText += '<b>' + chunks[i].text + '</b>';
+            } else {
+                highlightText += '<span>' + chunks[i].text + '</span>';
+            }
+        }
+
+        highlightText += '<br/><br/>';
+        highlightText += 'Общо рими: ' + rhymedWords.length + '<br/>';
+
+        highlightText = highlightText.replace(/\r?\n|\r/g, '<br>');
+
+        return highlightText;
     }
 
 }

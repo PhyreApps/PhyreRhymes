@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Easy find rhymes for your lyrics",
   "main": ".webpack/main",
+  "type": "commonjs",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -28,7 +29,8 @@
     "css-loader": "^6.11.0",
     "electron": "30.0.6",
     "node-loader": "^2.0.0",
-    "style-loader": "^3.3.4"
+    "style-loader": "^3.3.4",
+    "typescript": "^5.4.5"
   },
   "keywords": [],
   "author": {
@@ -43,6 +45,7 @@
     "@tailwindcss/forms": "^0.5.7",
     "@timfish/webpack-asset-relocator-loader": "^0.1.0",
     "electron-squirrel-startup": "^1.0.1",
+    "highlight-words": "^1.2.2",
     "postcss": "^8.4.38",
     "postcss-loader": "^8.1.1",
     "postcss-preset-env": "^9.5.13",
