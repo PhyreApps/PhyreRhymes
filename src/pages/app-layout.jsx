@@ -9,14 +9,14 @@ import {
 import {PencilIcon, SearchIcon} from '@heroicons/react/solid';
 
 
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import {HashRouter as Router, Routes, Route, NavLink, HashRouter} from 'react-router-dom';
 
 import Search from "./search.jsx";
 import AnalyseText from "./analyse-text.jsx";
 
 const navigation = [
-    { name: 'Рими', href: '#', icon: PencilIcon, current: true },
-    { name: 'Анализ на текст', href: '#/analyse-text', icon: DocumentTextIcon, current: false },
+    { name: 'Рими', href: '', icon: PencilIcon, current: true },
+    { name: 'Анализ на текст', href: '/analyse-text', icon: DocumentTextIcon, current: false },
 ]
 
 function classNames(...classes) {
@@ -28,14 +28,7 @@ export default function AppLayout() {
 
     return (
         <>
-            {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
+            <Router>
             <div>
                 <Transition.Root show={sidebarOpen} as="div">
                     <Dialog as="div" className="fixed inset-0 flex z-40 md:hidden" onClose={setSidebarOpen}>
@@ -59,7 +52,7 @@ export default function AppLayout() {
                             leaveFrom="translate-x-0"
                             leaveTo="-translate-x-full"
                         >
-                            <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-800">
+                            <div className="relative flex-1 flex flex-col max-w-xs w-full h-screen pt-5 pb-4 bg-gray-800">
                                 <Transition.Child
                                     as="div"
                                     enter="ease-in-out duration-300"
@@ -86,23 +79,28 @@ export default function AppLayout() {
                                 <div className="mt-5 flex-1 h-0 overflow-y-auto">
                                     <nav className="px-2 space-y-1">
                                         {navigation.map((item) => (
-                                            <a
+
+                                            <NavLink
                                                 key={item.name}
-                                                href={item.href}
-                                                className={classNames(
-                                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                    'group flex items-center px-2 py-2 text-base font-medium rounded-md'
-                                                )}
+                                                to={item.href}
+                                                className={({ isActive, isPending }) =>
+                                                    classNames(
+                                                        isActive ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                        'group flex items-center px-3 py-2 text-base font-medium rounded-md'
+                                                    )
+                                                }
                                             >
+
                                                 <item.icon
                                                     className={classNames(
                                                         item.current ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300',
-                                                        'mr-4 flex-shrink-0 h-6 w-6'
+                                                        'mr-2 flex-shrink-0 h-6 w-6'
                                                     )}
                                                     aria-hidden="true"
                                                 />
                                                 {item.name}
-                                            </a>
+                                           </NavLink>
+
                                         ))}
                                     </nav>
                                 </div>
@@ -123,14 +121,18 @@ export default function AppLayout() {
                         </div>
                         <div className="flex-1 flex flex-col overflow-y-auto">
                             <nav className="flex-1 px-2 py-4 space-y-1">
+
                                 {navigation.map((item) => (
-                                    <a
+
+                                    <NavLink
                                         key={item.name}
-                                        href={item.href}
-                                        className={classNames(
-                                            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                                        )}
+                                        to={item.href}
+                                        className={({ isActive, isPending }) =>
+                                            classNames(
+                                                isActive ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                                            )
+                                        }
                                     >
                                         <item.icon
                                             className={classNames(
@@ -140,7 +142,8 @@ export default function AppLayout() {
                                             aria-hidden="true"
                                         />
                                         {item.name}
-                                    </a>
+                                    </NavLink>
+
                                 ))}
                             </nav>
                         </div>
@@ -159,15 +162,14 @@ export default function AppLayout() {
                     </div>
 
                     <main className="flex-1 px-4">
-                        <Router>
-                            <Routes>
-                                <Route path='/' exact element={<Search />} />
-                                <Route path='/analyse-text' exact element={<AnalyseText />} />
-                            </Routes>
-                        </Router>
+                        <Routes>
+                            <Route path='/' exact element={<Search />} />
+                            <Route path='/analyse-text' exact element={<AnalyseText />} />
+                        </Routes>
                     </main>
                 </div>
             </div>
+            </Router>
         </>
     )
 }
