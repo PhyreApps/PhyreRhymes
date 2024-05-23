@@ -66,7 +66,7 @@ class RhymeAnalysis {
                 let word2 = words[j];
 
                 let rhymeRate = RhymeHelperBG.getRhymeRate(word1, word2);
-                if (rhymeRate > 0) {
+                if (rhymeRate > 1) {
 
                     rhymes.push({
                         word1: word1,

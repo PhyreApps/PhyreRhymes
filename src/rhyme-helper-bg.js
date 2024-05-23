@@ -20,12 +20,22 @@ class RhymeHelperBG {
         const wordLastTwoLetters = word.substring(word.length - 2);
         const wordLastFourLetters = word.substring(word.length - 4);
         const wordLastThreeLetters = word.substring(word.length - 3);
+        const wordVowels = this.getVowelLettersFromWord(word);
 
         const withWordSimilar = this.getSimilarSounding(withWord);
         const withWordCombinations = this.wordCombinations(withWord, 4);
         const withWordLastTwoLetters = withWord.substring(withWord.length - 2);
         const withWordLastFourLetters = withWord.substring(withWord.length - 4);
         const withWordLastThreeLetters = withWord.substring(withWord.length - 3);
+        const withWordVowels = this.getVowelLettersFromWord(withWord);
+
+        if (wordVowels.length > 0 && withWordVowels.length > 0) {
+            for (let vowel of wordVowels) {
+                if (withWordVowels.includes(vowel)) {
+                    rhymeRate = rhymeRate + 0.05;
+                }
+            }
+        }
 
         if (wordLastFourLetters === withWordLastFourLetters) {
             rhymeRate = rhymeRate + 1;
@@ -147,6 +157,25 @@ class RhymeHelperBG {
             "щ": ["ж", "шт"],
             "о": ["у"]
         };
+    }
+
+    static getVowelLettersFromWord(word) {
+        let vowels = [];
+        let wordArray = this.split(word);
+        for (let letter of wordArray) {
+            if (this.vowelLetters().includes(letter)) {
+                vowels.push(letter);
+            }
+        }
+        return vowels;
+    }
+
+    static vowelLetters() {
+        return ["а", "ъ", "о", "у", "е", "и"];
+    }
+    static consonantsLetters()
+    {
+        return ["б", "в", "г", "д", "ж", "з", "к", "л", "м", "н", "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ"];
     }
 
     static soundlyAndSoundlessConsonants() {
