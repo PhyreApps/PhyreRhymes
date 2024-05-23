@@ -1,6 +1,7 @@
 // Read content from file
 const RhymeEngine = require('./rhyme-engine');
 const RhymeAnalysis = require("./rhyme-analysis");
+const RhymeHelperBG = require("./rhyme-helper-bg");
 //
 // // Read the file
 // const rhyme = fs.readFileSync('src/dict/bg-spellchecked.txt', 'utf8');
@@ -32,6 +33,8 @@ let txt = '' +
     'Не питай защо, само здраво се дръж, \n' +
     'мед ще ми носиш когато сваля те веднъж.';
 
-let rhymeAnalysis = RhymeAnalysis.analyze(txt);
+// let rhymeAnalysis = RhymeAnalysis.analyze(txt);
+//
+// console.log(rhymeAnalysis);
 
-console.log(rhymeAnalysis);
+RhymeHelperBG.getRhymeRate("Сняг", "Як");

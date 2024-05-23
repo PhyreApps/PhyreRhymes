@@ -2,10 +2,10 @@ class RhymeHelperBG {
 
     static getRhymeRate(word, withWord) {
 
-        if (word.length < 3) {
+        if (word.length < 2) {
             return 0;
         }
-        if (withWord.length < 3) {
+        if (withWord.length < 2) {
             return 0;
         }
         word = word.toLowerCase();
@@ -17,14 +17,44 @@ class RhymeHelperBG {
         let rhymeRate = 0;
         const wordSimilar = this.getSimilarSounding(word);
         const wordCombinations = this.wordCombinations(word, 4);
+        const wordLastTwoLetters = word.substring(word.length - 2);
         const wordLastFourLetters = word.substring(word.length - 4);
         const wordLastThreeLetters = word.substring(word.length - 3);
 
-        if (withWord.includes(wordLastFourLetters)) {
+        const withWordSimilar = this.getSimilarSounding(withWord);
+        const withWordCombinations = this.wordCombinations(withWord, 4);
+        const withWordLastTwoLetters = withWord.substring(withWord.length - 2);
+        const withWordLastFourLetters = withWord.substring(withWord.length - 4);
+        const withWordLastThreeLetters = withWord.substring(withWord.length - 3);
+
+        if (wordLastFourLetters === withWordLastFourLetters) {
             rhymeRate = rhymeRate + 1;
         }
-        if (withWord.includes(wordLastThreeLetters)) {
-            rhymeRate = rhymeRate + 1;
+        if (wordLastThreeLetters === withWordLastThreeLetters) {
+            rhymeRate = rhymeRate + 0.5;
+        }
+        if (wordLastTwoLetters === withWordLastTwoLetters) {
+            rhymeRate = rhymeRate + 0.05;
+        }
+
+        if (wordSimilar.length > 0) {
+            for (let similar of wordSimilar) {
+
+                let wordSimilarTwoLetters = similar.substring(similar.length - 2);
+                let wordSimilarThreeLetters = similar.substring(similar.length - 3);
+                let wordSimilarFourLetters = similar.substring(similar.length - 4);
+
+                if (wordSimilarTwoLetters === withWordLastTwoLetters) {
+                    rhymeRate = rhymeRate + 0.05;
+                }
+                if (wordSimilarThreeLetters === withWordLastThreeLetters) {
+                    rhymeRate = rhymeRate + 0.5;
+                }
+                if (wordSimilarFourLetters === withWordLastFourLetters) {
+                    rhymeRate = rhymeRate + 1;
+                }
+
+            }
         }
 
         return rhymeRate;
