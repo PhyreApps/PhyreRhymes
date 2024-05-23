@@ -25,7 +25,7 @@ export default function AnalyseText() {
 
                 <div>
                     <h2 className="text-2xl font-bold text-white">Резултати</h2>
-                    <div className="mt-2"}>
+                    <div className="mt-2">
                         <div dangerouslySetInnerHTML={
                             {__html: results}
                         }></div>
@@ -50,6 +50,13 @@ export default function AnalyseText() {
                         value={text}
                         onChange={function (e) {
                             setText(e.target.value);
+                        }}
+                        onPaste={function (e) {
+                            e.preventDefault();
+                            let pastedText = e.clipboardData.getData('text/html');
+
+                            let doc = new DOMParser().parseFromString(pastedText, 'text/html');
+                            setText(doc.body.textContent);
                         }}
                         className="bg-transparent w-full h-[26rem] border border-white/5 rounded p-4"
                         placeholder="Въведете текста който искате да анализирате..."></textarea>
