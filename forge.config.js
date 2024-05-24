@@ -28,6 +28,7 @@ module.exports = {
           owner: 'PhyreApps',
           name: 'PhyreRhymes'
         },
+        authToken: process.env.GH_TOKEN,
         prerelease: true
       }
     }
