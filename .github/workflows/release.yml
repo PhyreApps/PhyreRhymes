@@ -17,8 +17,11 @@ jobs:
         with:
           node-version: 20
       - name: install dependencies
-        run: npm install
-      - name: publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run publish
+        run: |
+          npm install
+          npm run build
+
+#      - name: publish
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+#        run: npm run publish
