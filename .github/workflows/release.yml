@@ -15,17 +15,17 @@ jobs:
           ]
     runs-on: ${{ matrix.os.image }}
     steps:
-      
+
       - name: Github checkout
         uses: actions/checkout@v4
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
+        uses: actions/setup-node
         with:
-          node-version: 10
+          node-version: 20
 
       - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
+        uses: samuelmeuli/action-electron-builder
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
