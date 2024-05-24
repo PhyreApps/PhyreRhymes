@@ -30,6 +30,7 @@ module.exports = {
         },
         authToken: process.env.GH_TOKEN,
         release: true,
+        prerelease: false,
         draft: false,
       }
     }
