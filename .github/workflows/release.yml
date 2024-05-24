@@ -54,7 +54,7 @@ jobs:
         run: npm ci
 
       - name: Build Application
-        run: npm run build
+        run: npm run make
 
       - name: Publish Electron App
         env:
