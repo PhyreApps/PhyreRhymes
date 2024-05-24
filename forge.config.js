@@ -20,6 +20,18 @@ module.exports = {
     }),
   },
   rebuildConfig: {},
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'me',
+          name: 'PhyreApps/PhyreRhymes'
+        },
+        prerelease: true
+      }
+    }
+  ],
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
