@@ -28,7 +28,7 @@ module.exports = {
           owner: 'me',
           name: 'PhyreApps/PhyreRhymes'
         },
-        "draft": true
+        prerelease: true
       }
     }
   ],
