@@ -26,6 +26,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          npm run make
           npm run package
           npm run publish
