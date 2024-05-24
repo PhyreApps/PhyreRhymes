@@ -6,18 +6,18 @@ module.exports = {
   buildIdentifier: process.env.IS_BETA ? 'beta' : 'prod',
   packagerConfig: {
     asar: true,
-    name: 'PhyreRhymes',
-    executableName: 'PhyreRhymes',
-    appCopyright: 'Phyre Apps',
-    win32metadata: {
-      ProductName: 'PhyreRhymes',
-      CompanyName: 'Phyre Apps',
-      FileDescription: 'PhyreRhymes',
-    },
-    appBundleId: fromBuildIdentifier({
-      prod: 'com.phyre-apps.phyre-rhymes',
-      beta: 'com.phyre-apps.phyre-rhymes-beta'
-    }),
+    // name: 'PhyreRhymes',
+    // executableName: 'PhyreRhymes',
+    // appCopyright: 'Phyre Apps',
+    // win32metadata: {
+    //   ProductName: 'PhyreRhymes',
+    //   CompanyName: 'Phyre Apps',
+    //   FileDescription: 'PhyreRhymes',
+    // },
+    // appBundleId: fromBuildIdentifier({
+    //   prod: 'com.phyre-apps.phyre-rhymes',
+    //   beta: 'com.phyre-apps.phyre-rhymes-beta'
+    // }),
   },
   rebuildConfig: {},
   publishers: [
