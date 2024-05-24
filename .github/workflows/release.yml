@@ -26,5 +26,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          echo "${{ runner.os }}"
+          node -e "console.log(os.platform());"
+          npm run make
           npm run package
           npm run publish
