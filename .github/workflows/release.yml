@@ -28,6 +28,7 @@ jobs:
         run: |
           echo "${{ runner.os }}"
           node -e "console.log(os.platform());"
+          npm i -D electron@latest
           npm run make
           npm run package
           npm run publish
