@@ -29,7 +29,7 @@ module.exports = {
           name: 'PhyreRhymes'
         },
         authToken: process.env.GH_TOKEN,
-        prerelease: true,
+        release: true,
         draft: false,
       }
     }
