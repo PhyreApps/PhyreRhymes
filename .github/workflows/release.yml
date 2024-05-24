@@ -62,4 +62,4 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run publish -- --platform=${{ matrix.name }} --arch=${{ matrix.arch }} --auth-token=${{ secrets.GH_TOKEN }}
+        run: npm run publish -- --platform=${{ matrix.name }} --arch=${{ matrix.arch }}
