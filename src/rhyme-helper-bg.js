@@ -34,7 +34,7 @@ class RhymeHelperBG {
                 for (let withVowel of withWordVowels) {
                     if (vowel.letter === withVowel.letter) {
                         if (vowel.position === withVowel.position) {
-                            rhymeRate = rhymeRate + 0.5;
+                           rhymeRate = rhymeRate + 0.5;
                         } else {
                             rhymeRate = rhymeRate + 0.05;
                         }
@@ -44,14 +44,12 @@ class RhymeHelperBG {
         }
 
         if (wordLastFourLetters === withWordLastFourLetters) {
-            rhymeRate = rhymeRate + 1;
-        }
-        if (wordLastThreeLetters === withWordLastThreeLetters) {
+             rhymeRate = rhymeRate + 1;
+        } else  if (wordLastThreeLetters === withWordLastThreeLetters) {
             rhymeRate = rhymeRate + 0.5;
+        } else if (wordLastTwoLetters === withWordLastTwoLetters) {
+            rhymeRate = rhymeRate + 0.05;
         }
-        // if (wordLastTwoLetters === withWordLastTwoLetters) {
-        //     rhymeRate = rhymeRate + 0.05;
-        // }
 
         if (wordSimilar.length > 0) {
             for (let similar of wordSimilar) {
@@ -60,14 +58,12 @@ class RhymeHelperBG {
                 let wordSimilarThreeLetters = similar.substring(similar.length - 3);
                 let wordSimilarFourLetters = similar.substring(similar.length - 4);
 
-                // if (wordSimilarTwoLetters === withWordLastTwoLetters) {
-                //     rhymeRate = rhymeRate + 0.05;
-                // }
-                if (wordSimilarThreeLetters === withWordLastThreeLetters) {
-                    rhymeRate = rhymeRate + 0.5;
-                }
                 if (wordSimilarFourLetters === withWordLastFourLetters) {
                     rhymeRate = rhymeRate + 1;
+                } else if (wordSimilarThreeLetters === withWordLastThreeLetters) {
+                    rhymeRate = rhymeRate + 0.5;
+                } else if (wordSimilarTwoLetters === withWordLastTwoLetters) {
+                    rhymeRate = rhymeRate + 0.05;
                 }
 
             }

@@ -37,4 +37,8 @@ let txt = '' +
 //
 // console.log(rhymeAnalysis);
 
-RhymeHelperBG.getRhymeRate("Сняг", "Як");
+//RhymeHelperBG.getRhymeRate("Сняг", "Як");
+
+let rhymeTopRanking = [];
+
+const words = require('./dict/bg-words.json');
