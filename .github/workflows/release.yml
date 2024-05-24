@@ -1,3 +1,5 @@
+name: Release Application
+
 on:
   push:
     branches:
