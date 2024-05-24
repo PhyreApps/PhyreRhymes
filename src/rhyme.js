@@ -2,6 +2,8 @@
 const RhymeEngine = require('./rhyme-engine');
 const RhymeAnalysis = require("./rhyme-analysis");
 const RhymeHelperBG = require("./rhyme-helper-bg");
+const fs = require('fs');
+
 //
 // // Read the file
 // const rhyme = fs.readFileSync('src/dict/bg-spellchecked.txt', 'utf8');
@@ -39,6 +41,26 @@ let txt = '' +
 
 //RhymeHelperBG.getRhymeRate("Сняг", "Як");
 
-let rhymeTopRanking = [];
+let rhymeTopRanking = {};
 
 const words = require('./dict/bg-words.json');
+
+for (let i = 0; i < words.length; i++) {
+    let word = words[i];
+    for (let j = 0; j < words.length; j++) {
+        let word2 = words[j];
+        let rhymeRate = RhymeHelperBG.getRhymeRate(word, word2);
+        if (rhymeRate > 1) {
+            if (!rhymeTopRanking[word]) {
+                rhymeTopRanking[word] = [];
+            }
+            rhymeTopRanking[word].push({
+                word: word2,
+                rate: rhymeRate
+            });
+        }
+    }
+}
+
+// save to file
+fs.writeFileSync('src/dict/bg-top-rhymes-ranking.json', JSON.stringify(rhymeTopRanking));
