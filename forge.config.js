@@ -25,8 +25,8 @@ module.exports = {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'me',
-          name: 'PhyreApps/PhyreRhymes'
+          owner: 'PhyreApps',
+          name: 'PhyreRhymes'
         },
         prerelease: true
       }
