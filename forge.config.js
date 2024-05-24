@@ -32,6 +32,7 @@ module.exports = {
         release: true,
         prerelease: false,
         draft: false,
+        force: true
       }
     }
   ],
