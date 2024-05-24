@@ -25,7 +25,7 @@ jobs:
           node-version: 20
 
       - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder
+        uses: wenwuwu/action-electron-forge@v1.4.0
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
