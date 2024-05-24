@@ -19,7 +19,7 @@ jobs:
       - name: install dependencies
         run: |
           npm install
-          npm make
+          npm run make
 
 #      - name: publish
 #        env:
