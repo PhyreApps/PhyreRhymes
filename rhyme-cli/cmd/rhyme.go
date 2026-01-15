@@ -11,6 +11,7 @@ import (
 )
 
 var maxResults int
+var useEnhanced bool
 
 var rhymeCmd = &cobra.Command{
 	Use:   "rhyme [word]",
@@ -39,7 +40,12 @@ var rhymeCmd = &cobra.Command{
 			return
 		}
 
-		rhymes := rhyme.FindRhymes(word, allWords, maxResults)
+		var rhymes []rhyme.RhymeResult
+		if useEnhanced {
+			rhymes = rhyme.FindRhymesEnhanced(word, allWords, maxResults)
+		} else {
+			rhymes = rhyme.FindRhymes(word, allWords, maxResults)
+		}
 
 		result := map[string]interface{}{
 			"success": true,
@@ -59,4 +65,5 @@ var rhymeCmd = &cobra.Command{
 
 func init() {
 	rhymeCmd.Flags().IntVarP(&maxResults, "max", "m", 100, "Maximum number of results to return")
+	rhymeCmd.Flags().BoolVarP(&useEnhanced, "enhanced", "e", false, "Use enhanced rhyming algorithm (multi-layered scoring)")
 }

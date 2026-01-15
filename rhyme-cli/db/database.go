@@ -28,10 +28,12 @@ func createTables() error {
 	CREATE TABLE IF NOT EXISTS words (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		word TEXT NOT NULL UNIQUE,
+		rhyme_key TEXT,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
 	
 	CREATE INDEX IF NOT EXISTS idx_word ON words(word);
+	CREATE INDEX IF NOT EXISTS idx_rhyme_key ON words(rhyme_key);
 	`
 
 	_, err := DB.Exec(query)

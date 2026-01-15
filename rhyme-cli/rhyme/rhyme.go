@@ -211,12 +211,35 @@ func contains(slice []string, item string) bool {
 }
 
 // FindRhymes finds all rhyming words for a given word
+// Uses the original algorithm
 func FindRhymes(findRhymesForWord string, allWords []string, maxResults int) []RhymeResult {
+	return FindRhymesWithAlgorithm(findRhymesForWord, allWords, maxResults, false)
+}
+
+// FindRhymesEnhanced finds all rhyming words using the enhanced algorithm
+func FindRhymesEnhanced(findRhymesForWord string, allWords []string, maxResults int) []RhymeResult {
+	return FindRhymesWithAlgorithm(findRhymesForWord, allWords, maxResults, true)
+}
+
+// FindRhymesWithAlgorithm finds rhyming words using either original or enhanced algorithm
+func FindRhymesWithAlgorithm(findRhymesForWord string, allWords []string, maxResults int, useEnhanced bool) []RhymeResult {
 	var rhymes []RhymeResult
 
 	for _, word := range allWords {
-		rhymeRate := GetRhymeRate(findRhymesForWord, word)
-		if rhymeRate < 1 {
+		var rhymeRate float64
+		if useEnhanced {
+			rhymeRate = GetEnhancedRhymeRate(findRhymesForWord, word)
+		} else {
+			rhymeRate = GetRhymeRate(findRhymesForWord, word)
+		}
+		
+		// Enhanced algorithm has different scoring, adjust threshold
+		threshold := 1.0
+		if useEnhanced {
+			threshold = 2.0 // Enhanced scores are higher
+		}
+		
+		if rhymeRate < threshold {
 			continue
 		}
 
@@ -226,7 +249,7 @@ func FindRhymes(findRhymesForWord string, allWords []string, maxResults int) []R
 		})
 	}
 
-	// Sort by rating descending
+	// Sort by rating descending (using insertion sort for small lists, or could use sort.Slice)
 	for i := 0; i < len(rhymes)-1; i++ {
 		for j := i + 1; j < len(rhymes); j++ {
 			if rhymes[i].Rating < rhymes[j].Rating {
