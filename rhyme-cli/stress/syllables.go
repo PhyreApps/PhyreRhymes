@@ -55,18 +55,6 @@ func SplitSyllables(word string) []string {
 			j++
 		}
 		
-		// Ако няма повече гласни, всички останали съгласни отиват в тази сричка
-		if j >= len(runes) {
-			for i < len(runes) {
-				current.WriteRune(runes[i])
-				i++
-			}
-			if current.Len() > 0 {
-				syllables = append(syllables, current.String())
-			}
-			break
-		}
-		
 		// Правила за разпределение на съгласните:
 		if consonantCount == 0 {
 			// Няма съгласни между гласните - сричката завършва тук
@@ -78,15 +66,48 @@ func SplitSyllables(word string) []string {
 			if current.Len() > 0 {
 				syllables = append(syllables, current.String())
 			}
-		} else {
-			// Две или повече съгласни
-			// Първата съгласна остава в тази сричка, останалите отиват в следващата
-			// Това е стандартното правило за българско сричкопренасяне
+		} else if consonantCount == 2 {
+			// Две съгласни - първата остава с предишната сричка, втората с новата
+			// Специален случай: ако двете съгласни са в края на думата (няма повече гласни),
+			// и двете остават заедно в последната сричка (пример: "спорт")
+			if j >= len(runes) {
+				// Двете съгласни са в края - остават заедно
+				current.WriteRune(runes[i])
+				current.WriteRune(runes[i+1])
+				i += 2
+				
+				if current.Len() > 0 {
+					syllables = append(syllables, current.String())
+				}
+				break
+			}
+			
+			// Нормален случай: първата остава, втората отива към следващата сричка
 			current.WriteRune(runes[i])
 			i++
 			
 			if current.Len() > 0 {
 				syllables = append(syllables, current.String())
+			}
+		} else {
+			// Три или повече съгласни
+			// Първата остава с предишната сричка, останалите отиват в следващата
+			// Това е правилото според произношението и официалните правила за сричкопренасяне
+			// Пример: "транспорт" → "тран-спорт" (н остава с "а", с-п отиват с "о")
+			current.WriteRune(runes[i])
+			i++
+			
+			if current.Len() > 0 {
+				syllables = append(syllables, current.String())
+			}
+			
+			// Ако няма повече гласни, но има останали съгласни, те се добавят към последната сричка
+			if j >= len(runes) && i < len(runes) {
+				for i < len(runes) {
+					syllables[len(syllables)-1] += string(runes[i])
+					i++
+				}
+				break
 			}
 		}
 	}
