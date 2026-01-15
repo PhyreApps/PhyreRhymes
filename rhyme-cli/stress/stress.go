@@ -6,11 +6,13 @@ import (
 
 // Result съдържа резултата от определяне на ударението
 type Result struct {
-	Word       string  `json:"word"`
-	Stressed   string  `json:"stressed"`   // Думата с маркирано ударение
-	Stress     int     `json:"stress"`      // Позиция на ударението (1-based)
-	Confidence float64 `json:"confidence"`  // Увереност (0.0 - 1.0)
-	Syllables  []string `json:"syllables"`  // Разделени срички
+	Word          string  `json:"word"`
+	Stressed      string  `json:"stressed"`        // Думата с маркирано ударение
+	Stress        int     `json:"stress"`          // Позиция на ударението (1-based по срички)
+	StressLetter  string  `json:"stress_letter"`    // Ударената буква
+	StressPos     int     `json:"stress_pos"`      // Позиция на ударената буква в думата (1-based)
+	Confidence    float64 `json:"confidence"`      // Увереност (0.0 - 1.0)
+	Syllables     []string `json:"syllables"`     // Разделени срички
 }
 
 // GuessStress определя ударението в думата
@@ -23,15 +25,99 @@ func GuessStress(word string) Result {
 	syllables := SplitSyllables(word)
 	
 	// Прилагане на автономни правила
-	stress, confidence := ApplyRules(word, syllables)
+	stressSyllable, confidence := ApplyRules(word, syllables)
+	
+	stressedWord := ApplyStress(word, stressSyllable)
+	
+	// Намираме позицията на ударената буква в думата
+	stressLetter, stressPos := findStressedLetter(word, stressedWord, stressSyllable, syllables)
 	
 	return Result{
-		Word:       word,
-		Stressed:   ApplyStress(word, stress),
-		Stress:     stress,
-		Confidence: confidence,
-		Syllables:  syllables,
+		Word:         word,
+		Stressed:     stressedWord,
+		Stress:       stressSyllable,
+		StressLetter: stressLetter,
+		StressPos:    stressPos,
+		Confidence:   confidence,
+		Syllables:    syllables,
 	}
+}
+
+// findStressedLetter намира ударената буква и нейната позиция в думата
+func findStressedLetter(originalWord, stressedWord string, stressSyllable int, syllables []string) (string, int) {
+	originalRunes := []rune(originalWord)
+	stressedRunes := []rune(stressedWord)
+	
+	// Намираме позицията на ударената буква в stressedWord
+	stressedLetterPos := -1
+	
+	for i := 0; i < len(stressedRunes); i++ {
+		r := stressedRunes[i]
+		
+		// Проверяваме дали е директно ударена гласна (à, è, ì, ò, ù)
+		if isStressedVowel(r) {
+			stressedLetterPos = i
+			break
+		}
+		
+		// Проверяваме за комбиниращ grave accent (U+0300) след гласна
+		if i+1 < len(stressedRunes) && stressedRunes[i+1] == '\u0300' {
+			if vowels[r] {
+				stressedLetterPos = i
+				break
+			}
+		}
+	}
+	
+	if stressedLetterPos == -1 {
+		// Fallback: намираме първата гласна в ударената сричка
+		if stressSyllable >= 1 && stressSyllable <= len(syllables) {
+			syllableStart := 0
+			for i := 0; i < stressSyllable-1; i++ {
+				syllableStart += len([]rune(syllables[i]))
+			}
+			stressedSyllable := syllables[stressSyllable-1]
+			syllableEnd := syllableStart + len([]rune(stressedSyllable))
+			
+			for i := syllableStart; i < len(originalRunes) && i < syllableEnd; i++ {
+				if vowels[originalRunes[i]] {
+					return string(originalRunes[i]), i + 1
+				}
+			}
+		}
+		return "", 0
+	}
+	
+	// Сега намираме съответната позиция в originalWord
+	// Броим буквите в stressedWord до ударената буква (без accent символите)
+	originalPos := 0
+	for i := 0; i < stressedLetterPos; i++ {
+		if stressedRunes[i] != '\u0300' {
+			// Пропускаме accent символите, но броим буквите
+			originalPos++
+		}
+	}
+	
+	// Намираме съответната гласна в originalWord
+	// Трябва да намерим гласната на позиция originalPos или след нея
+	for originalPos < len(originalRunes) {
+		if vowels[originalRunes[originalPos]] {
+			letter := string(originalRunes[originalPos])
+			return letter, originalPos + 1 // 1-based позиция
+		}
+		originalPos++
+	}
+	
+	return "", 0
+}
+
+// isStressedVowel проверява дали rune е ударена гласна
+func isStressedVowel(r rune) bool {
+	stressedVowels := map[rune]bool{
+		'à': true, 'è': true, 'ì': true,
+		'ò': true, 'ù': true,
+	}
+	return stressedVowels[r]
 }
 
 // ApplyStress прилага визуално ударение към думата

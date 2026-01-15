@@ -6,6 +6,7 @@ import (
 
 	"rhyme-cli/db"
 	"rhyme-cli/rhyme"
+	"rhyme-cli/stress"
 
 	"github.com/spf13/cobra"
 )
@@ -47,11 +48,21 @@ var rhymeCmd = &cobra.Command{
 			rhymes = rhyme.FindRhymes(word, allWords, maxResults)
 		}
 
+		// Добавяме информация за ударението на търсената дума
+		targetStress := stress.GuessStress(word)
+
 		result := map[string]interface{}{
 			"success": true,
 			"word":    word,
 			"count":   len(rhymes),
 			"rhymes":  rhymes,
+		}
+
+		// Добавяме ударението на търсената дума ако е намерено
+		if targetStress.Stress > 0 {
+			result["target_stress"] = targetStress.Stress
+			result["target_stressed"] = targetStress.Stressed
+			result["target_rhyme_suffix"] = rhyme.GetRhymeSuffix(word)
 		}
 
 		jsonOutput, err := json.MarshalIndent(result, "", "  ")

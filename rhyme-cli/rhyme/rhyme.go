@@ -1,12 +1,16 @@
 package rhyme
 
 import (
+	"rhyme-cli/stress"
 	"strings"
 )
 
 type RhymeResult struct {
-	Word   string  `json:"word"`
-	Rating float64 `json:"rating"`
+	Word       string  `json:"word"`
+	Rating     float64 `json:"rating"`
+	Stress     int     `json:"stress,omitempty"`      // Позиция на ударението (1-based)
+	Stressed   string  `json:"stressed,omitempty"`    // Думата с маркирано ударение
+	RhymeSuffix string `json:"rhyme_suffix,omitempty"` // Римовата част (от ударената сричка)
 }
 
 // GetRhymeRate calculates the rhyme rate between two words
@@ -227,26 +231,67 @@ func FindRhymesWithAlgorithm(findRhymesForWord string, allWords []string, maxRes
 
 	for _, word := range allWords {
 		var rhymeRate float64
-		if useEnhanced {
-			rhymeRate = GetEnhancedRhymeRate(findRhymesForWord, word)
-		} else {
-			rhymeRate = GetRhymeRate(findRhymesForWord, word)
-		}
-		
-		// Enhanced algorithm has different scoring, adjust threshold
 		threshold := 1.0
+		var wordStress stress.Result
+		
 		if useEnhanced {
-			threshold = 2.0 // Enhanced scores are higher
+			// КРИТИЧНО: При enhanced алгоритъма ПЪРВО проверяваме ударението
+			// и САМО ако съвпада, продължаваме с изчисляването на рейтинга
+			targetStress := stress.GuessStress(findRhymesForWord)
+			wordStress = stress.GuessStress(word)
+			
+			// СТРОГА ПРОВЕРКА: ударената буква ТРЯБВА да съвпада
+			// Сравняваме И позицията от края И буквата
+			targetWordRunes := []rune(findRhymesForWord)
+			wordRunes := []rune(word)
+			
+			targetPosFromEnd := len(targetWordRunes) - targetStress.StressPos + 1
+			wordPosFromEnd := len(wordRunes) - wordStress.StressPos + 1
+			
+			// Ударението трябва да е на същата позиция от края (с толеранс ±1)
+			posDiff := targetPosFromEnd - wordPosFromEnd
+			if posDiff < 0 {
+				posDiff = -posDiff
+			}
+			
+			// И ударената буква трябва да съвпада
+			letterMatch := targetStress.StressLetter == wordStress.StressLetter
+			
+			// Ако позицията е различна ИЛИ буквата е различна, пропускаме
+			if posDiff > 1 || !letterMatch {
+				// Пропускаме думи с различно ударение НЕЗАБАВНО
+				continue
+			}
+			
+			// Само ако ударенията съвпадат, изчисляваме рейтинга
+			rhymeRate = GetRhymeRateWithStress(findRhymesForWord, word)
+			threshold = 3.0 // Enhanced scores are higher
+		} else {
+			// Оригиналният алгоритъм (без ударение)
+			rhymeRate = GetRhymeRate(findRhymesForWord, word)
+			wordStress = stress.GuessStress(word)
 		}
 		
 		if rhymeRate < threshold {
 			continue
 		}
 
-		rhymes = append(rhymes, RhymeResult{
-			Word:   word,
-			Rating: rhymeRate,
-		})
+		// Добавяме информация за ударението и римовата част
+		wordRhymeSuffix := GetRhymeSuffix(word)
+
+		result := RhymeResult{
+			Word:       word,
+			Rating:     rhymeRate,
+			RhymeSuffix: wordRhymeSuffix,
+		}
+
+		// Добавяме ударението само ако е различно от търсената дума
+		if wordStress.Stress > 0 {
+			result.Stress = wordStress.Stress
+			result.Stressed = wordStress.Stressed
+		}
+
+		rhymes = append(rhymes, result)
 	}
 
 	// Sort by rating descending (using insertion sort for small lists, or could use sort.Slice)
