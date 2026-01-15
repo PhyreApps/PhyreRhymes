@@ -1,80 +1,41 @@
-const RhymeHelperBG = require("./rhyme-helper-bg");
+const RhymeEngineCLI = require("./rhyme-engine-cli");
 const highlightWords = require("highlight-words");
 
 class RhymeAnalysis {
-    static analyze(text) {
+    static async analyze(text) {
 
         const segmenter = new Intl.Segmenter([], { granularity: 'word' });
         const segmentedText = segmenter.segment(text);
         const words = [...segmentedText].filter(s => s.isWordLike).map(s => s.segment);
 
-        let colors = [
-            '#FF0000',
-            '#00FF00',
-            '#0000FF',
-            '#FFFF00',
-            '#00FFFF',
-            '#FF00FF',
-            '#FFA500',
-            '#800080',
-            '#008000',
-            '#000080',
-            '#800000',
-            '#808000',
-            '#008080',
-            '#800080',
-            '#808080',
-            '#FFC0CB',
-            '#FF4500',
-            '#FFD700',
-            '#FF6347',
-            '#FF69B4',
-            '#FFA07A',
-            '#FFA500',
-            '#FFD700',
-            '#FF6347',
-            '#FF69B4',
-            '#FFA07A',
-            '#FFA500',
-            '#FFD700',
-            '#FF6347',
-            '#FF69B4',
-            '#FFA07A',
-            '#FFA500',
-            '#FFD700',
-            '#FF6347',
-            '#FF69B4',
-            '#FFA07A',
-            '#FFA500',
-            '#FFD700',
-            '#FF6347',
-            '#FF69B4',
-            '#FFA07A',
-            '#FFA500',
-            '#FFD700',
-        ];
-
-        let ryhmeI = 0;
         let rhymes = [];
         let rhymedWords = [];
+        
+        // Compare all word pairs using the compare command
         for (let i = 0; i < words.length; i++) {
-            for (let j = 0; j < words.length; j++) {
-                if (i === j) {
-                    continue;
-                }
+            for (let j = i + 1; j < words.length; j++) {
                 let word1 = words[i];
                 let word2 = words[j];
+                
+                if (word1.toLowerCase() === word2.toLowerCase()) {
+                    continue;
+                }
 
-                let rhymeRate = RhymeHelperBG.getRhymeRate(word1, word2);
-                if (rhymeRate > 1) {
-
-                    rhymes.push({
-                        word1: word1,
-                        word2: word2,
-                        rating: rhymeRate
-                    });
-                    rhymedWords.push(word1);
-                    rhymedWords.push(word2);
+                try {
+                    // Use the compare command to check if words rhyme
+                    const result = await RhymeEngineCLI.compare(word1, word2);
+                    
+                    if (result.success && result.rhyme) {
+                        rhymes.push({
+                            word1: word1,
+                            word2: word2,
+                            rating: result.rating
+                        });
+                        rhymedWords.push(word1);
+                        rhymedWords.push(word2);
+                    }
+                } catch (error) {
+                    console.error(`Error comparing ${word1} and ${word2}:`, error);
                 }
             }
         }

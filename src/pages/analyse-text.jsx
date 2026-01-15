@@ -5,14 +5,23 @@ import RhymeAnalysis from "../rhyme-analysis";
 export default function AnalyseText() {
     const [results, setResults] = React.useState('');
     const [text, setText] = React.useState('');
+    const [isAnalyzing, setIsAnalyzing] = React.useState(false);
 
-    function analyse() {
+    async function analyse() {
         if (text === '') {
             return;
         }
 
-        let rhymeAnalysis = RhymeAnalysis.analyze(text);
-        setResults(rhymeAnalysis);
+        setIsAnalyzing(true);
+        try {
+            let rhymeAnalysis = await RhymeAnalysis.analyze(text);
+            setResults(rhymeAnalysis);
+        } catch (error) {
+            console.error('Error analyzing text:', error);
+            setResults('Грешка при анализ на текста. Моля, опитайте отново.');
+        } finally {
+            setIsAnalyzing(false);
+        }
     }
 
     return (
@@ -73,11 +82,11 @@ export default function AnalyseText() {
                         </div>
                         <button
                             onClick={analyse}
-                            disabled={!text.trim()}
+                            disabled={!text.trim() || isAnalyzing}
                             className="w-full px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold rounded-xl hover:from-yellow-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-gray-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-500/20 flex items-center justify-center"
                         >
                             <DocumentTextIcon className="h-5 w-5 mr-2" />
-                            Анализирай текст
+                            {isAnalyzing ? 'Анализиране...' : 'Анализирай текст'}
                         </button>
                     </div>
                 </div>

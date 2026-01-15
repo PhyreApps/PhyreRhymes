@@ -5,4 +5,5 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('rhymeAPI', {
     findRhymes: (word, maxResults) => ipcRenderer.invoke('rhyme:find', word, maxResults),
     getStress: (word) => ipcRenderer.invoke('rhyme:stress', word),
+    compareWords: (word1, word2) => ipcRenderer.invoke('rhyme:compare', word1, word2),
 });

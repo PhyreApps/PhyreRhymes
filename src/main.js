@@ -72,5 +72,15 @@ ipcMain.handle('rhyme:stress', async (event, word) => {
     }
 });
 
+ipcMain.handle('rhyme:compare', async (event, word1, word2) => {
+    try {
+        const result = await RhymeCLIHandler.compareWords(word1, word2);
+        return result;
+    } catch (error) {
+        console.error('Error in rhyme:compare handler:', error);
+        return { success: false, error: error.message };
+    }
+});
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

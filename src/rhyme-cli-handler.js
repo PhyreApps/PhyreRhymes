@@ -131,6 +131,39 @@ class RhymeCLIHandler {
             return null;
         }
     }
+
+    /**
+     * Compare two words for rhyming
+     */
+    static async compareWords(word1, word2) {
+        if (!word1 || word1.trim() === '' || !word2 || word2.trim() === '') {
+            return { success: false, error: 'Empty word(s)' };
+        }
+
+        const cliPath = this.getCLIPath();
+        const escapedWord1 = word1.replace(/"/g, '\\"');
+        const escapedWord2 = word2.replace(/"/g, '\\"');
+        const command = `"${cliPath}" compare "${escapedWord1}" "${escapedWord2}"`;
+
+        try {
+            const cliDir = path.dirname(cliPath);
+            const { stdout, stderr } = await execAsync(command, {
+                cwd: cliDir,
+            });
+
+            if (stderr) {
+                console.error('CLI stderr:', stderr);
+            }
+
+            return JSON.parse(stdout);
+        } catch (error) {
+            console.error('Error comparing words:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to compare words'
+            };
+        }
+    }
 }
 
 module.exports = RhymeCLIHandler;

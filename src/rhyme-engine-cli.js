@@ -82,6 +82,49 @@ class RhymeEngineCLI {
             return null;
         }
     }
+
+    /**
+     * Compare two words for rhyming (via IPC)
+     * @param {string} word1 - First word to compare
+     * @param {string} word2 - Second word to compare
+     * @returns {Promise<Object>} Comparison result with rating and rhyme status
+     */
+    static async compare(word1, word2) {
+        if (!word1 || word1.trim() === '' || !word2 || word2.trim() === '') {
+            return { success: false, error: 'Empty word(s)' };
+        }
+
+        try {
+            const api = this.checkAPI();
+            const result = await api.compareWords(word1, word2);
+
+            if (!result.success) {
+                console.error('CLI error:', result.error);
+                return result;
+            }
+
+            return {
+                success: true,
+                word1: result.word1,
+                word2: result.word2,
+                rating: result.rating,
+                rhyme: result.rhyme,
+                threshold: result.threshold,
+                word1_stress: result.word1_stress,
+                word1_stressed: result.word1_stressed,
+                word1_rhyme_suffix: result.word1_rhyme_suffix,
+                word2_stress: result.word2_stress,
+                word2_stressed: result.word2_stressed,
+                word2_rhyme_suffix: result.word2_rhyme_suffix,
+            };
+        } catch (error) {
+            console.error('Error comparing words:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to compare words'
+            };
+        }
+    }
 }
 
 module.exports = RhymeEngineCLI;
