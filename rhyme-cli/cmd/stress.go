@@ -17,10 +17,7 @@ var stressCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		word := args[0]
 		
-		// Зареждане на речник (ако съществува)
-		_ = stress.LoadDict("stress-dict.json")
-		
-		// Определяне на ударението
+		// Определяне на ударението (автономен алгоритъм)
 		result := stress.GuessStress(word)
 		
 		// JSON изход

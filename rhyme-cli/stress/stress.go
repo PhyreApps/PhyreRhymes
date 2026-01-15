@@ -22,18 +22,7 @@ func GuessStress(word string) Result {
 
 	syllables := SplitSyllables(word)
 	
-	// 1. Проверка в речника (най-висока увереност)
-	if stress, ok := GetFromDict(word); ok {
-		return Result{
-			Word:       word,
-			Stressed:   ApplyStress(word, stress),
-			Stress:     stress,
-			Confidence: 0.98,
-			Syllables:  syllables,
-		}
-	}
-
-	// 2. Прилагане на правила
+	// Прилагане на автономни правила
 	stress, confidence := ApplyRules(word, syllables)
 	
 	return Result{

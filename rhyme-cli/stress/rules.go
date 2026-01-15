@@ -1,6 +1,8 @@
 package stress
 
-import "strings"
+import (
+	"strings"
+)
 
 // endsWith проверява дали думата завършва с някой от суфиксите
 func endsWith(word string, suffixes ...string) bool {
@@ -12,7 +14,17 @@ func endsWith(word string, suffixes ...string) bool {
 	return false
 }
 
-// ApplyRules прилага правила за определяне на ударението
+// startsWith проверява дали думата започва с някой от префиксите
+func startsWith(word string, prefixes ...string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(word, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
+// ApplyRules прилага автономни правила за определяне на ударението
 func ApplyRules(word string, syllables []string) (int, float64) {
 	syllableCount := len(syllables)
 	
@@ -20,47 +32,97 @@ func ApplyRules(word string, syllables []string) (int, float64) {
 		return 0, 0.0
 	}
 	
-	// Правило 1: Суфикси "-ене", "-ание" -> предпоследна сричка
-	if endsWith(word, "ене", "ание", "ение") {
-		if syllableCount >= 2 {
-			return syllableCount - 1, 0.75
-		}
-	}
-	
-	// Правило 2: Завършва на "-и" -> последна сричка
-	if endsWith(word, "и") && syllableCount > 1 {
-		return syllableCount, 0.70
-	}
-	
-	// Правило 3: Определителен член "-те", "-та", "-то" -> запазва ударението от основната форма
-	// За думи завършващи на "-те", "-та", "-то" - ударението обикновено е на първата сричка
-	if endsWith(word, "те", "та", "то") && syllableCount >= 2 {
-		// Ако думата е достатъчно дълга, вероятно ударението е на първата сричка
-		if syllableCount >= 3 {
-			return 1, 0.60
-		}
-		return syllableCount - 1, 0.65
-	}
-	
-	// Правило 3b: Завършва на "-а", "-о", "-е" (без определителен член) -> предпоследна сричка
-	if endsWith(word, "а", "о", "е") && syllableCount >= 2 {
-		return syllableCount - 1, 0.65
-	}
-	
-	// Правило 4: Завършва на "-ка", "-ца" -> предпоследна сричка
-	if endsWith(word, "ка", "ца", "та", "да") && syllableCount >= 2 {
-		return syllableCount - 1, 0.60
-	}
-	
-	// Правило 5: Едносрични думи -> ударение на единствената сричка
+	// Правило 1: Едносрични думи -> ударение на единствената сричка
 	if syllableCount == 1 {
-		return 1, 0.80
+		return 1, 0.90
+	}
+	
+	// Правило 2: Двусрични думи -> ударение на първата сричка (най-често)
+	if syllableCount == 2 {
+		return 1, 0.85
+	}
+	
+	// Правило 3: Суфикси "-ене", "-ание", "-ение" -> предпоследна сричка
+	if endsWith(word, "ене", "ание", "ение", "ане") {
+		if syllableCount >= 2 {
+			return syllableCount - 1, 0.85
+		}
+	}
+	
+	// Правило 4: Определителен член "-те", "-та", "-то", "-ят", "-я" -> запазва ударението
+	// Премахваме определителния член и определяме ударението на основата
+	if endsWith(word, "те", "та", "то", "ят", "я") && syllableCount >= 3 {
+		// За думи с определителен член, ударението обикновено е на първата сричка
+		// или на предпоследната преди определителния член
+		baseStress := syllableCount - 2 // предпоследна преди определителния член
+		if baseStress < 1 {
+			baseStress = 1
+		}
+		return baseStress, 0.80
+	}
+	
+	// Правило 5: Множествено число "-и" -> последна сричка (но не винаги)
+	if endsWith(word, "и") && syllableCount > 1 {
+		// Ако е кратко окончание, вероятно ударението е на последната
+		if syllableCount == 2 {
+			return syllableCount, 0.75
+		}
+		// За по-дълги думи, ударението може да е на предпоследната
+		return syllableCount - 1, 0.70
+	}
+	
+	// Правило 6: Прилагателни имена "-ен", "-ан", "-ин" -> предпоследна сричка
+	if endsWith(word, "ен", "ан", "ин", "он") && syllableCount >= 2 {
+		return syllableCount - 1, 0.75
+	}
+	
+	// Правило 7: Съществителни с "-ка", "-ца", "-та", "-да" -> предпоследна сричка
+	if endsWith(word, "ка", "ца", "та", "да") && syllableCount >= 2 {
+		return syllableCount - 1, 0.70
+	}
+	
+	// Правило 8: Глаголи "-ам", "-ям", "-ем" -> предпоследна сричка
+	if endsWith(word, "ам", "ям", "ем", "им") && syllableCount >= 2 {
+		return syllableCount - 1, 0.75
+	}
+	
+	// Правило 9: Префикси "по-", "на-", "пре-", "раз-" -> ударението обикновено е след префикса
+	if startsWith(word, "по", "на", "пре", "раз", "под", "над", "из", "от") && syllableCount >= 3 {
+		// Ударението е на втората сричка (след префикса)
+		return 2, 0.70
+	}
+	
+	// Правило 10: Завършва на "-а", "-о", "-е" (без определителен член) -> предпоследна сричка
+	if endsWith(word, "а", "о", "е") && syllableCount >= 2 {
+		// Но само ако не е определителен член (вече обработен)
+		if !endsWith(word, "та", "то", "те") {
+			return syllableCount - 1, 0.65
+		}
+	}
+	
+	// Правило 11: Трисрични думи -> ударение на първата или втората сричка
+	if syllableCount == 3 {
+		// Проверяваме дали има префикс
+		if startsWith(word, "по", "на", "пре", "раз", "под", "над", "из", "от") {
+			return 2, 0.75 // след префикса
+		}
+		return 1, 0.70 // първата сричка
+	}
+	
+	// Правило 12: Четирисрични и повече -> ударение на първата или втората сричка
+	if syllableCount >= 4 {
+		// Проверяваме за префикси
+		if startsWith(word, "по", "на", "пре", "раз", "под", "над", "из", "от", "об", "въз") {
+			return 2, 0.70 // след префикса
+		}
+		// Иначе на първата сричка
+		return 1, 0.65
 	}
 	
 	// Fallback: предпоследна сричка (най-често срещано в българския)
 	if syllableCount >= 2 {
-		return syllableCount - 1, 0.55
+		return syllableCount - 1, 0.60
 	}
 	
-	return 1, 0.50
+	return 1, 0.55
 }
