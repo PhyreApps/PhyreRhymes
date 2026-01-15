@@ -5,6 +5,7 @@ import {
     DocumentTextIcon,
     MenuAlt2Icon,
     XIcon,
+    InformationCircleIcon,
 } from '@heroicons/react/outline'
 import {PencilIcon, SearchIcon} from '@heroicons/react/solid';
 
@@ -13,9 +14,11 @@ import {HashRouter as Router, Routes, Route, NavLink, HashRouter} from 'react-ro
 
 import Search from "./search.jsx";
 import AnalyseText from "./analyse-text.jsx";
+import StressCheck from "./stress-check.jsx";
 
 const navigation = [
     { name: 'Рими', href: '', icon: PencilIcon, current: true },
+    { name: 'Проверка на ударение', href: '/stress-check', icon: InformationCircleIcon, current: false },
     { name: 'Анализ на текст', href: '/analyse-text', icon: DocumentTextIcon, current: false },
 ]
 
@@ -164,6 +167,7 @@ export default function AppLayout() {
                     <main className="flex-1 px-4">
                         <Routes>
                             <Route path='/' exact element={<Search />} />
+                            <Route path='/stress-check' exact element={<StressCheck />} />
                             <Route path='/analyse-text' exact element={<AnalyseText />} />
                         </Routes>
                     </main>
