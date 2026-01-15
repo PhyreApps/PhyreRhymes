@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
+const RhymeCLIHandler = require('./rhyme-cli-handler');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -13,6 +14,8 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
@@ -46,6 +49,27 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// IPC handlers for rhyme CLI
+ipcMain.handle('rhyme:find', async (event, word, maxResults) => {
+    try {
+        const result = await RhymeCLIHandler.findRhymes(word, maxResults);
+        return result;
+    } catch (error) {
+        console.error('Error in rhyme:find handler:', error);
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('rhyme:stress', async (event, word) => {
+    try {
+        const result = await RhymeCLIHandler.getStress(word);
+        return result;
+    } catch (error) {
+        console.error('Error in rhyme:stress handler:', error);
+        return null;
+    }
 });
 
 // In this file you can include the rest of your app's specific main process

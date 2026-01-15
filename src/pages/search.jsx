@@ -1,23 +1,30 @@
 import { SearchIcon } from '@heroicons/react/solid'
 import React from 'react';
-const RhymeEngine = require('../rhyme-engine');
+const RhymeEngineCLI = require('../rhyme-engine-cli');
 export default function Search() {
 
     const [query, setQuery] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [results, setResults] = React.useState([]);
+    const [error, setError] = React.useState(null);
 
-    function searchForRhymes() {
+    async function searchForRhymes() {
         if (query === '') {
             alert('Моля въведете дума за търсене');
             return;
         }
         setLoading(true);
-        setTimeout(function () {
-            let rhymes = RhymeEngine.rhyme(query);
+        setError(null);
+        try {
+            let rhymes = await RhymeEngineCLI.rhyme(query, 100);
             setResults(rhymes);
+        } catch (err) {
+            console.error('Error searching for rhymes:', err);
+            setError('Грешка при търсене на рими. Моля проверете дали CLI-то е компилирано.');
+            setResults([]);
+        } finally {
             setLoading(false);
-        }, 1);
+        }
     }
 
     return (
@@ -51,16 +58,16 @@ export default function Search() {
 
             <div>
                 <div>
-                    {loading ? <>
-
-                        <div>
-                            Търсене за: {query}
+                    {loading && (
+                        <div className="text-white/60 mb-2">
+                            Търсене за: <span className="font-semibold">{query}</span>
                         </div>
-
-
-                    </> : <>
-
-                    </>}
+                    )}
+                    {error && (
+                        <div className="text-red-400 mb-2 p-2 bg-red-500/10 rounded">
+                            {error}
+                        </div>
+                    )}
                 </div>
 
                 {results.length > 0 ? <>
