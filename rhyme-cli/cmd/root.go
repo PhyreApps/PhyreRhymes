@@ -20,6 +20,7 @@ func Execute() error {
 func init() {
 	rootCmd.AddCommand(importCmd)
 	rootCmd.AddCommand(rhymeCmd)
+	rootCmd.AddCommand(stressCmd)
 }
 
 func initDB() error {

@@ -74,6 +74,36 @@ Output (JSON):
 
 The tool uses SQLite database (`rhymes.db`) to store words. The database is created automatically on first use.
 
+## Determine Word Stress
+
+Find the stress position in a Bulgarian word:
+
+```bash
+./rhyme-cli stress [word]
+```
+
+Example:
+```bash
+./rhyme-cli stress копие
+```
+
+Output (JSON):
+```json
+{
+  "word": "копие",
+  "stressed": "ко̀пие",
+  "stress": 1,
+  "confidence": 0.98,
+  "syllables": ["ко", "пи", "е"]
+}
+```
+
+The stress detection uses:
+- Dictionary lookup (highest confidence)
+- Rule-based heuristics (suffix patterns)
+- Syllable analysis
+- Fallback to penultimate syllable (most common in Bulgarian)
+
 ## Algorithm
 
 The rhyming algorithm is based on:
