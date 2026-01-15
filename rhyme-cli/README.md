@@ -40,7 +40,7 @@ Output (JSON):
 
 ### Find rhyming words
 
-Find words that rhyme with a given word:
+Find words that rhyme with a given word (using stress-aware algorithm):
 
 ```bash
 ./rhyme-cli rhyme [word] [--max N]
@@ -51,24 +51,32 @@ Options:
 
 Example:
 ```bash
-./rhyme-cli rhyme божидар --max 50
+./rhyme-cli rhyme бедните --max 10
 ```
 
 Output (JSON):
 ```json
 {
   "success": true,
-  "word": "божидар",
-  "count": 50,
+  "word": "бедните",
+  "count": 10,
+  "target_stress": 1,
+  "target_stressed": "бèдните",
+  "target_rhyme_suffix": "бедните",
   "rhymes": [
     {
-      "word": "божидар",
-      "rating": 2.5
+      "word": "бездните",
+      "rating": 7.9,
+      "stress": 1,
+      "stressed": "бèздните",
+      "rhyme_suffix": "бездните"
     },
     ...
   ]
 }
 ```
+
+**Note:** The algorithm only returns words with matching stress position and stress letter.
 
 ## Database
 
@@ -106,7 +114,9 @@ The stress detection uses:
 
 ## Algorithm
 
-The rhyming algorithm is based on:
-- Last letter matching (2, 3, 4 letters)
-- Vowel position matching
-- Similar sounding letter replacements (Bulgarian language specific)
+The rhyming algorithm uses stress-aware matching:
+- **Stress position matching**: Only words with the same stress position (from end) are considered
+- **Stress letter matching**: Only words with the same stressed letter are considered
+- **Rhyme suffix matching**: Compares the rhyming part (from stressed syllable to end)
+- **Phonetic similarity**: Accounts for similar-sounding letter replacements (Bulgarian language specific)
+- **Multi-layered scoring**: Combines multiple factors for accurate rhyme detection

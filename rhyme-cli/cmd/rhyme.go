@@ -12,12 +12,11 @@ import (
 )
 
 var maxResults int
-var useEnhanced bool
 
 var rhymeCmd = &cobra.Command{
 	Use:   "rhyme [word]",
 	Short: "Find rhyming words",
-	Long:  "Find words that rhyme with the given word",
+	Long:  "Find words that rhyme with the given word (using stress-aware algorithm)",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := db.Init(); err != nil {
@@ -41,12 +40,8 @@ var rhymeCmd = &cobra.Command{
 			return
 		}
 
-		var rhymes []rhyme.RhymeResult
-		if useEnhanced {
-			rhymes = rhyme.FindRhymesEnhanced(word, allWords, maxResults)
-		} else {
-			rhymes = rhyme.FindRhymes(word, allWords, maxResults)
-		}
+		// Използваме само stress-aware алгоритъма
+		rhymes := rhyme.FindRhymes(word, allWords, maxResults)
 
 		// Добавяме информация за ударението на търсената дума
 		targetStress := stress.GuessStress(word)
@@ -76,5 +71,4 @@ var rhymeCmd = &cobra.Command{
 
 func init() {
 	rhymeCmd.Flags().IntVarP(&maxResults, "max", "m", 100, "Maximum number of results to return")
-	rhymeCmd.Flags().BoolVarP(&useEnhanced, "enhanced", "e", false, "Use enhanced rhyming algorithm (multi-layered scoring)")
 }

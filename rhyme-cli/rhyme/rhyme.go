@@ -13,75 +13,6 @@ type RhymeResult struct {
 	RhymeSuffix string `json:"rhyme_suffix,omitempty"` // Римовата част (от ударената сричка)
 }
 
-// GetRhymeRate calculates the rhyme rate between two words
-func GetRhymeRate(word, withWord string) float64 {
-	word = strings.ToLower(word)
-	withWord = strings.ToLower(withWord)
-
-	if len(word) < 2 || len(withWord) < 2 {
-		return 0
-	}
-
-	if word == withWord {
-		return 0
-	}
-
-	var rhymeRate float64
-
-	wordSimilar := getSimilarSounding(word)
-	wordLastTwoLetters := getLastN(word, 2)
-	wordLastFourLetters := getLastN(word, 4)
-	wordLastThreeLetters := getLastN(word, 3)
-	wordVowels := getVowelLettersFromWord(word)
-
-	withWordLastTwoLetters := getLastN(withWord, 2)
-	withWordLastFourLetters := getLastN(withWord, 4)
-	withWordLastThreeLetters := getLastN(withWord, 3)
-	withWordVowels := getVowelLettersFromWord(withWord)
-
-	// Check vowel matches
-	if len(wordVowels) > 0 && len(withWordVowels) > 0 {
-		for _, vowel := range wordVowels {
-			for _, withVowel := range withWordVowels {
-				if vowel.Letter == withVowel.Letter {
-					if vowel.Position == withVowel.Position {
-						rhymeRate += 0.5
-					} else {
-						rhymeRate += 0.05
-					}
-				}
-			}
-		}
-	}
-
-	// Check last letter matches
-	if wordLastFourLetters == withWordLastFourLetters {
-		rhymeRate += 1
-	} else if wordLastThreeLetters == withWordLastThreeLetters {
-		rhymeRate += 0.5
-	} else if wordLastTwoLetters == withWordLastTwoLetters {
-		rhymeRate += 0.05
-	}
-
-	// Check similar sounding matches
-	if len(wordSimilar) > 0 {
-		for _, similar := range wordSimilar {
-			similarTwoLetters := getLastN(similar, 2)
-			similarThreeLetters := getLastN(similar, 3)
-			similarFourLetters := getLastN(similar, 4)
-
-			if similarFourLetters == withWordLastFourLetters {
-				rhymeRate += 1
-			} else if similarThreeLetters == withWordLastThreeLetters {
-				rhymeRate += 0.5
-			} else if similarTwoLetters == withWordLastTwoLetters {
-				rhymeRate += 0.05
-			}
-		}
-	}
-
-	return rhymeRate
-}
 
 type VowelPosition struct {
 	Letter   string
@@ -214,63 +145,42 @@ func contains(slice []string, item string) bool {
 	return false
 }
 
-// FindRhymes finds all rhyming words for a given word
-// Uses the original algorithm
+// FindRhymes finds all rhyming words for a given word using stress-aware algorithm
 func FindRhymes(findRhymesForWord string, allWords []string, maxResults int) []RhymeResult {
-	return FindRhymesWithAlgorithm(findRhymesForWord, allWords, maxResults, false)
-}
-
-// FindRhymesEnhanced finds all rhyming words using the enhanced algorithm
-func FindRhymesEnhanced(findRhymesForWord string, allWords []string, maxResults int) []RhymeResult {
-	return FindRhymesWithAlgorithm(findRhymesForWord, allWords, maxResults, true)
-}
-
-// FindRhymesWithAlgorithm finds rhyming words using either original or enhanced algorithm
-func FindRhymesWithAlgorithm(findRhymesForWord string, allWords []string, maxResults int, useEnhanced bool) []RhymeResult {
 	var rhymes []RhymeResult
 
+	// Определяме ударението на търсената дума веднъж
+	targetStress := stress.GuessStress(findRhymesForWord)
+	targetWordRunes := []rune(findRhymesForWord)
+
 	for _, word := range allWords {
-		var rhymeRate float64
-		threshold := 1.0
-		var wordStress stress.Result
+		// Определяме ударението на текущата дума
+		wordStress := stress.GuessStress(word)
+		wordRunes := []rune(word)
 		
-		if useEnhanced {
-			// КРИТИЧНО: При enhanced алгоритъма ПЪРВО проверяваме ударението
-			// и САМО ако съвпада, продължаваме с изчисляването на рейтинга
-			targetStress := stress.GuessStress(findRhymesForWord)
-			wordStress = stress.GuessStress(word)
-			
-			// СТРОГА ПРОВЕРКА: ударената буква ТРЯБВА да съвпада
-			// Сравняваме И позицията от края И буквата
-			targetWordRunes := []rune(findRhymesForWord)
-			wordRunes := []rune(word)
-			
-			targetPosFromEnd := len(targetWordRunes) - targetStress.StressPos + 1
-			wordPosFromEnd := len(wordRunes) - wordStress.StressPos + 1
-			
-			// Ударението трябва да е на същата позиция от края (с толеранс ±1)
-			posDiff := targetPosFromEnd - wordPosFromEnd
-			if posDiff < 0 {
-				posDiff = -posDiff
-			}
-			
-			// И ударената буква трябва да съвпада
-			letterMatch := targetStress.StressLetter == wordStress.StressLetter
-			
-			// Ако позицията е различна ИЛИ буквата е различна, пропускаме
-			if posDiff > 1 || !letterMatch {
-				// Пропускаме думи с различно ударение НЕЗАБАВНО
-				continue
-			}
-			
-			// Само ако ударенията съвпадат, изчисляваме рейтинга
-			rhymeRate = GetRhymeRateWithStress(findRhymesForWord, word)
-			threshold = 3.0 // Enhanced scores are higher
-		} else {
-			// Оригиналният алгоритъм (без ударение)
-			rhymeRate = GetRhymeRate(findRhymesForWord, word)
-			wordStress = stress.GuessStress(word)
+		// СТРОГА ПРОВЕРКА: ударената буква ТРЯБВА да съвпада
+		// Сравняваме И позицията от края И буквата
+		targetPosFromEnd := len(targetWordRunes) - targetStress.StressPos + 1
+		wordPosFromEnd := len(wordRunes) - wordStress.StressPos + 1
+		
+		// Ударението трябва да е на същата позиция от края (с толеранс ±1)
+		posDiff := targetPosFromEnd - wordPosFromEnd
+		if posDiff < 0 {
+			posDiff = -posDiff
 		}
+		
+		// И ударената буква трябва да съвпада
+		letterMatch := targetStress.StressLetter == wordStress.StressLetter
+		
+		// Ако позицията е различна ИЛИ буквата е различна, пропускаме
+		if posDiff > 1 || !letterMatch {
+			// Пропускаме думи с различно ударение НЕЗАБАВНО
+			continue
+		}
+		
+		// Само ако ударенията съвпадат, изчисляваме рейтинга
+		rhymeRate := GetRhymeRateWithStress(findRhymesForWord, word)
+		threshold := 3.0
 		
 		if rhymeRate < threshold {
 			continue
@@ -285,7 +195,7 @@ func FindRhymesWithAlgorithm(findRhymesForWord string, allWords []string, maxRes
 			RhymeSuffix: wordRhymeSuffix,
 		}
 
-		// Добавяме ударението само ако е различно от търсената дума
+		// Добавяме ударението
 		if wordStress.Stress > 0 {
 			result.Stress = wordStress.Stress
 			result.Stressed = wordStress.Stressed
